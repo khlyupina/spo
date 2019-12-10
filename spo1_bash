@@ -1,0 +1,25 @@
+#!/bin/bash
+dir=~/l1
+cd ~/l1
+tree -h
+rm $dir/lab1.xls
+mkdir ~/papka
+cd ~/papka
+IFS=$'\n'
+files=$(find $dir -type f)
+for file in $files; do
+	name=$(echo "${file%.*}")
+	exp=$(echo "${file##*.}")
+	size=$(stat -c '%s' "$file")
+	data=$(stat -c '%z' "$file")
+	dur=$(mediainfo "$file" 2>/dev/null | grep --max-count=1 Duration | awk '{print $3,$4}')
+	echo "$name" >> name.txt
+	echo "$exp" >> exp.txt
+	echo "$size" >> size.txt
+	echo "$data" >> data.txt
+	echo "$dur" >> dur.txt
+	done
+echo Имя,Расширение,Размер,Дата изменения,Длительность > $dir/lab1.xls
+paste --delimiters=',' name.txt exp.txt size.txt data.txt dur.txt >> $dir/lab1.xls
+cd $dir
+rm -r ~/papka
